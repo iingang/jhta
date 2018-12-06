@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -47,14 +48,30 @@ public class NoticeRegController extends HttpServlet {
 		String path = req.getServletContext().getRealPath("/upload");
 		System.out.println(path);
 		
+		File file = new File(path);
+		if(!file.exists())
+			file.mkdirs(); //make directory
+		
 		//String filePath = path+"/a.jpg";
-		String filePath = path +File.separator+"a.jpg";
+		String filePath = path +File.separator+"aa.jpg";
 		
 		// 입력을 위한 설정
 		req.setCharacterEncoding("UTF-8");
 		String title = req.getParameter("title"); //필수입력이니까 null검증안해도됨 항상오니까. 
+		
+		/*String []titles = req.getParameterValues("title");
+			for(String title : titles)
+				System.out.println("title:"+title);
+		
+		Collection<Part> parts = req.getParts();
+		for(Part p : parts)
+			if(p.getName().equals("file"))
+				System.out.println("part:"+p.getName()+","+p.getSubmittedFileName());*/
+		
 		String content = req.getParameter("content");
 		Part part = req.getPart("file");
+		
+		String fileName = part.getSubmittedFileName();
 		InputStream fis = part.getInputStream();
 		//OutputStream fos = new FileOutputStream("/Users/ingyung/Downloads/a.jpg"); //windows 경우 ("d:\\a.jpg");
 		OutputStream fos = new FileOutputStream(filePath);
@@ -71,21 +88,56 @@ public class NoticeRegController extends HttpServlet {
 		String sql = "insert into Notice(ID, TITLE, WRITER_ID, CONTENT) "
 				+ "VALUES(NOTICE_SEQ.NEXTVAL, ?, ?, ?)";
 		
+		//현재 게시글 중에서 가장 최근 게시글의 id를 얻는 쿼리 
+		String sql1 = "select id from (select * from notice order by regdate desc) where rownum = 1";
+		
+		
+		String sql2 = "insert into NOTICE_FILE(ID, NAME, NOTICE_ID) "
+	            + "VALUES(NOTICE_FILE_SEQ.NEXTVAL, ?, ?)";
+		
 		try {
 			String url = "jdbc:oracle:thin:@211.238.142.251:1521:orcl";
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection con = DriverManager.getConnection(url, "c##sist", "dclass");
 			//Statement st = con.createStatement();
+			
+			con.setAutoCommit(false);
+			
 			PreparedStatement st = con.prepareStatement(sql);
 			st.setString(1, title);
 			st.setString(2, "newlec");
 			st.setString(3, content);
-			//ResultSet rs = st.executeQuery(sql);
-			//ResultSet rs = st.executeQuery();
-			
 			int affected = st.executeUpdate();
+			
+			PreparedStatement st1 = con.prepareStatement(sql1);
+			ResultSet rs =st1.executeQuery();
+			rs.next(); // 꼭 해줘야 채울게 있는거야 
+			int noticeId = rs.getInt("id");
+			rs.close();
+			
+			PreparedStatement st2 = con.prepareStatement(sql2);
+			
+			st2.setString(1, fileName);
+			st2.setInt(2, noticeId);
+			st2.executeUpdate();
+			
+			
+			//실행 
+			
+			con.commit();
+			
+			
+			//ResultSet rs =st.executeQuery();
+			//int affected = st.executeUpdate();
+			
+			
+			
+			st.close();
+			st1.close();
+			st2.close();
+			con.close();
 
-			resp.sendRedirect("list");
+			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,7 +145,8 @@ public class NoticeRegController extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+		
+		resp.sendRedirect("list");
 		
 	}
 	

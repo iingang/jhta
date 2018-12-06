@@ -1,4 +1,4 @@
-@import url(../css/joinus.css);
+@import url(joinus.css);
 
 #content h2 {
 	position:absolute;
@@ -13,7 +13,7 @@
 	top:119px;
 	width:624px;
 	height: 247px;
-	background: url("images/bgLoginBox.png") no-repeat 0px 0px;
+	background: url("../images/bgLoginBox.png") no-repeat 0px 0px;
 }
 
 #content form h3 {
@@ -84,7 +84,7 @@
 	border: 0px;    
     width: 83px;
     height: 53px;
-    background: url("images/btnLogin.png") no-repeat 0px 0px;
+    background: url("../images/btnLogin.png") no-repeat 0px 0px;
     text-indent: -999px;
     overflow: hidden;
 }
