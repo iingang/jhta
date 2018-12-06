@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.newlecture.web.entity.Notice;
+import com.newlecture.web.entity.NoticeView;
+import com.newlecture.web.service.NoticeService;
+import com.newlecture.web.service.jdbc.JdbcNoticeService;
 
 @WebServlet("/customer/notice/list")
 public class NoticeListController extends HttpServlet {
@@ -26,6 +29,9 @@ public class NoticeListController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
+		NoticeService service= new JdbcNoticeService();
+		
 		// jdbc ÄÚµå
 		String page_ = request.getParameter("p");
 		
@@ -33,6 +39,14 @@ public class NoticeListController extends HttpServlet {
 		if(page_!=null&&!page_.equals(""))
 			page=Integer.parseInt(page_);
 		
+		List<NoticeView> list = service.getViewList();
+		
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/customer/notice/list.jsp");
+	    request.setAttribute("list", list);
+	    dispatcher.forward(request,response);
+		
+		
+		/*
 		String sql = "SELECT * FROM " + 
 	            "(" + 
 	            "    SELECT ROWNUM NUM, N.* " + 
@@ -85,7 +99,7 @@ public class NoticeListController extends HttpServlet {
 		    dispatcher.forward(request,response);
 			
 
-			/* rs.next(); */
+			 rs.next(); 
 
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -93,7 +107,7 @@ public class NoticeListController extends HttpServlet {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 	}
 

@@ -1,4 +1,3 @@
-
 // ----- ex10-종합 테스트 : DOM 조작 능력이 있는가?? -----------
 window.addEventListener("load", function(){
 	var ex10 = document.querySelector("#ex10");
@@ -16,6 +15,11 @@ window.addEventListener("load", function(){
 		idTd.innerText = notice.id;
 		titleTd.innerText = notice.title;
 		writerIdTd.innerText = notice.writerId;
+
+		//4. 데이터를 심는 작업 추가 //data-id값 넣어줌. 이걸 타겟 데이터셋으로 꺼낼수있다.
+		var aEdit = tr.querySelector(".edit");
+		aEdit.dataset.id = notice.id;
+
 		tbody.appendChild(tr);
 
 	};
@@ -51,10 +55,10 @@ window.addEventListener("load", function(){
 		// 이런식으로 해도 돼!
 		// var notice = {};
 		// notice.id = txtId.value;
-
-		tbody.innerHTML = "";
 		notices.push({id:txtId.value, title:txtTitle.value, writerId:txtWriterId.value});
-		console.log(notices.length);
+		tbody.innerHTML = "";
+		
+		// console.log(notices.length);
 	
 		for(var i=0; i<notices.length; i++){
 			var tr = document.importNode(template.content, true);
@@ -73,43 +77,211 @@ window.addEventListener("load", function(){
 		
 	};
 
-	// var editBtns = ex10.querySelectorAll(".etc a[data-id='3']");
-	// var editBtn = ex10.querySelector(".edit");
-	// var editBtn = ex10.querySelector("a[data-id='3']");
-	// editBtn.onclick = function(){
-	// 	alert("hello");
-	// };
-	
-	// editBtn.addEventListener("click",function(e){
-	// 	console.log(e.target.nodeName);
-	// 	alert("hello");	
-	// });
+	//이거 되는거
 
+	// var edit = ex10.querySelector("tbody");
 
-
-	// var editBtns = ex10.querySelectorAll("a[data-id='3']");
-
-	// for(var i=0; i<editBtns.length; i++)
-	// 	editBtns[i].addEventListener("click",function(e){
-	// 		console.log(e.target.nodeName);
-	// 		alert("hello");	
-	// 	});
-
-	var edit = ex10.querySelector("tbody");
-
-	edit.addEventListener("click",function(e){
-		//console.log(e.target.nodeName);
+	// edit.addEventListener("click",function(e){
+	// 	//console.log(e.target.nodeName);
 		
-		console.log(e.target.className);
-		if(e.target.className != "edit") return;
+	// 	// console.log(e.target.className);
+	// 	if(e.target.className != "edit") return;
 
-		alert("Hello");
+	// 	alert("Hello");
 
-	},true);
+	// },true);
 
 	
+	//=========================3. 일괄삭제버튼 =========================== 
+	var removeBtn = ex10.querySelector('input[name="btn-del-all"]');
+	
+	
+	removeBtn.onclick = function(){
+		
+		//이 체크박스는 안에서 선언해줘야돼!!!!! 멍청아!!!!!! 그러지좀마!!!
+		var chkboxes = ex10.querySelectorAll('tbody td:first-child input');
+		
+		for(var i=chkboxes.length-1; i>=0; i--){
+			if(chkboxes[i].checked)
+				notices.splice(i,1);
+		
+		}
+
+		//이렇게 밑으로 테이블 갱신해준다고 생각해!
+		tbody.innerHTML = "";
+		for(var i=0; i<notices.length; i++){
+			var tr = document.importNode(template.content, true);
+			bind(tr,notices[i]);
+		}
+
+	};
+
+	//================ 4. 수정/삭제 버튼 구현 ======================
+
+
+	tbody.onclick = function(e){
+		if(e.target.classList.contains("edit")){
+ 
+			var id = e.target.dataset.id;//-를 사용한 모든 애들은 set을 사용하여 표현할 수 있다
+	 
+			var notice = null;
+			for(var i=0; i<notices.length ; i++){
+	 
+				 if(notices[i].id == id){
+					 notice = notices[i];
+					 break;
+				 }
+			 }
+	 
+			txtId.value = notice.id;
+			txtTitle.value = notice.title;
+			txtWriterId.value = notice.writerId;
+	 
+			e.preventDefault(); //기본행위를 막아주는 행동 새로고침이 되지 않는다.
+		 }
+	};
+
 
 });
+
+// // ----- ex10-종합 테스트 : DOM 조작 능력이 있는가?? -----------
+// window.addEventListener("load", function(){
+// 	var ex10 = document.querySelector("#ex10");
+
+// 	var notices = [
+// 		{id:1, title:"javascript 란?", writerId:"newlec"},
+// 		{id:2, title:"너희들이 서블릿을 알아?", writerId:"newlec"},
+// 		{id:3, title:"안다고~ 난 좀 쩔지~~ㅋㅋ?", writerId:"nolec"}
+// 	];
+// 	var bind = function(tr, notice){
+// 		var idTd = tr.querySelector(".id");
+// 		var titleTd = tr.querySelector(".title");
+// 		var writerIdTd = tr.querySelector(".writer-id");
+
+// 		idTd.innerText = notice.id;
+// 		titleTd.innerText = notice.title;
+// 		writerIdTd.innerText = notice.writerId;
+
+// 		//4. 데이터를 심는 작업 추가 //data-id값 넣어줌. 이걸 타겟 데이터셋으로 꺼낼수있다.
+// 		var aEdit = tr.querySelector(".edit");
+// 		aEdit.dataset.id = notice.id;
+
+
+// 		tbody.appendChild(tr);
+
+// 	};
+
+// 	var template = ex10.querySelector(".row-template");
+// 	var tbody = ex10.querySelector("tbody");
+
+// 	//1. 위의 데이터로 초기 테이블의 tr 설정해 주세요.
+
+// 	var btnAdd = ex10.querySelector('input[name="btn-add"]');
+// 	var table = ex10.querySelector("table");
+
+	
+// 	for(var i=0; i<notices.length; i++){
+// 		var tr = document.importNode(template.content, true);
+// 		bind(tr,notices[i]);
+// 		// table.appendChild(tr);
+// 	}
+
+
+// 	var txtId = ex10.querySelector("input[name='id']");
+// 	var txtTitle = ex10.querySelector("input[name='title']");
+// 	var txtWriterId = ex10.querySelector("input[name='writer-id']");
+
+
+// 	//2. add 버튼을 클릭하면 실행되는 함수블록을 추가
+// 	btnAdd.onclick = function(e){
+
+// 		//입력한 데이터를 notices 배열에 추가한다.
+// 		//tr 들을 모두 지운다.
+// 		//tbody.innerHTML = "";
+		
+// 		// 이런식으로 해도 돼!
+// 		// var notice = {};
+// 		// notice.id = txtId.value;
+
+		
+// 		notices.push({id:txtId.value, title:txtTitle.value, writerId:txtWriterId.value});
+// 		// console.log(notices.length);
+// 		tbody.innerHTML = "";
+// 		for(var i=0; i<notices.length; i++){
+// 			var tr = document.importNode(template.content, true);
+// 			bind(tr,notices[i]);
+// 		}
+// 	};
+
+// 	//체크박스 일괄선택되게!
+// 	var chkHeader = ex10.querySelector('thead input[type="checkbox"]');
+// 	chkHeader.onclick = function(){
+// 		// console.log(chkHeader.checked);
+// 		var chkboxes = ex10.querySelectorAll('tbody td:first-child input');
+// 		var st = chkHeader.checked;
+// 		for(var i=0; i<chkboxes.length;i++)
+// 			chkboxes[i].checked = st;
+		
+// 	};
+
+// 	//이거 되는거
+
+// 	// var edit = ex10.querySelector("tbody");
+
+// 	// edit.addEventListener("click",function(e){
+// 	// 	//console.log(e.target.nodeName);
+		
+// 	// 	// console.log(e.target.className);
+// 	// 	if(e.target.className != "edit") return;
+
+// 	// 	alert("Hello");
+
+// 	// },true);
+
+	
+// 	//=========================3. 일괄삭제버튼 =========================== 
+// 	var removeBtn = ex10.querySelector('input[name="btn-del-all"]');
+// 	var chkboxes = ex10.querySelectorAll('tbody td:first-child input');
+	
+// 	removeBtn.onclick = function(){
+// 		// notices.splice(1,1);
+// 		// for(var i=notices.length-1; i>=0; i--){
+// 		// 	if(chkboxes[i].checked)
+// 		// 		notices.splice(i,1);
+		
+// 		// }
+
+// 	  for(var i=chkboxes.length-1; i>=0; i--)
+//       {
+//          if(chkboxes[i].checked)
+//          {
+//             notices.splice(i,1);         
+//          }      
+//       }
+
+// 		//이렇게 밑으로 테이블 갱신해준다고 생각해!
+// 		tbody.innerHTML = "";
+// 		for(var i=0; i<notices.length; i++){
+// 			var tr = document.importNode(template.content, true);
+// 			bind(tr,notices[i]);
+// 		}
+
+// 	};
+
+// 	//================ 4. 수정/삭제 버튼 구현 ======================
+
+
+// 	tbody.onclick = function(e){
+// 		if(e.target.classList.contains("edit")){
+// 			alert(e.target.dataset.id);
+
+// 			//기본행위 막기
+// 			e.preventDefault();
+// 		};
+// 	}
+
+
+// });
 
 
 /*--- ex9-이벤트 객체 트리거: 사진파일 선택하기 -----------------------*/ 

@@ -85,7 +85,7 @@
                      <c:forEach var="n" items="${list}">
                         <tr>
                            <td class="seq">${n.id}</td>
-                           <td class="title"><a href="detail?id=${n.id}">${n.title}</a></td>
+                           <td class="title"><a href="detail?id=${n.id}">${n.title}</a><a href="">[${n.commentCount}]</a></td>
                            <td class="writer">${n.writerId}</td>
                            <td class="regdate">${n.regDate}</td>
                            <td class="hit">${n.hit}</td>
